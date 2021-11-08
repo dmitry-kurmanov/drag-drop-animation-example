@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Drag Drop Animation Example</title>
+
+  <style>
+    .item {
+      background: tomato;
+      color: white;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin: 10px;
+    }
+
+    .movedown {
+      transform: translate(0, 0);
+      animation: movedown 0.2s;
+      animation-timing-function: ease-in-out;
+    }
+
+    @keyframes movedown {
+      0% {
+        transform: translate(0, -100px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    .moveup {
+      transform: translate(0, 0);
+      animation: moveup 0.2s;
+      animation-timing-function: ease-in-out;
+    }
+
+    @keyframes moveup {
+      0% {
+        transform: translate(0, 100px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <div id="1" class="item item--1" draggable="true">1</div>
+    <div id="2" class="item item--2" draggable="true">2</div>
+  </div>
+  <div id="3" class="item item--3" draggable="true">3</div>
+  </div>
+  <div id="4" class="item item--4" draggable="true">4</div>
+  </div>
+  <div id="5" class="item item--5" draggable="true">5</div>
+  </div>
+</body>
+<script>
+  let draggedItem = null;
+  let draggedOverItem = null;
+
+  const handleDragStart = (event) => {
+    draggedItem = event.target;
+  };
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    if (draggedOverItem === event.target) return;
+    draggedOverItem = event.target;
+    if (!draggedItem || !draggedOverItem) return;
+    if (
+      !draggedOverItem.classList.contains("item") ||
+      draggedItem.id === draggedOverItem.id
+    ) {
+      return;
+    }
+
+    draggedItem.style.background = "black";
+    draggedItem.style.color = "black";
+    swapItems();
+  };
+
+  const handleDragEnd = (event) => {
+    draggedItem.style.background = "tomato";
+    draggedItem.style.color = "white";
+  };
+
+  const swapItems = () => {
+    // defer = true;
+    const items = document.querySelectorAll(".item");
+    const parentElement = draggedOverItem.parentElement;
+    let draggedItemIndex;
+    let draggedOverItemIndex;
+
+    items.forEach((item, index) => {
+      if (item === draggedItem) draggedItemIndex = index;
+      if (item === draggedOverItem) draggedOverItemIndex = index;
+      item.classList.remove("moveup");
+      item.classList.remove("movedown");
+    });
+
+    if (draggedItemIndex > draggedOverItemIndex) {
+      draggedOverItem.classList.add("movedown");
+      parentElement.insertBefore(draggedItem, draggedOverItem);
+    } else {
+      draggedOverItem.classList.add("moveup");
+      if (!!draggedOverItem.nextSibling) {
+        parentElement.insertBefore(draggedItem, draggedOverItem.nextSibling);
+      } else {
+        parentElement.appendChild(draggedItem);
+      }
+    }
+  }
+
+  window.addEventListener('dragstart', handleDragStart);
+  window.addEventListener('dragover', handleDragOver);
+  window.addEventListener('dragend', handleDragEnd);
+</script>
+
+</html>
